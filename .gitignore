@@ -1,3 +1,4 @@
 stego-test/test
 stego-test/images
+*.png
 __pycache__
