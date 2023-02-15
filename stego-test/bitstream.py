@@ -1,8 +1,13 @@
-import numpy as np
 import math
+import time
+import ctypes
+
+import numpy as np
+
+from image_bits import ImageBits
 
 class bitstream:
-    def __init__(self, name: str, bit_array_length: int, content: str):
+    def __init__(self, name: str, bit_array_length: int, content):
         self.max_bit_size = bit_array_length
         self.max_byte_size = math.ceil(bit_array_length / 8)
 
@@ -35,6 +40,27 @@ class bitstream:
         set_value = self.byte_array[index // 8]
         rest = index % 8
         self.byte_array[index // 8] ^= (-bool(value) ^ set_value) & (1 << (7 - rest))
+
+
+def conv_bitimage_bistream(image_bits: ImageBits) -> bitstream:
+    image_sep = image_bits.image.reshape((-1, 4))
+    
+    lib = ctypes.CDLL('./create_byte_func.so')
+    lib.get_byte.argtypes = [ctypes.POINTER(ctypes.c_uint8)]
+    lib.get_byte.restype = ctypes.c_byte
+    
+    volve_func = lambda x: lib.get_byte(x.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)))
+    
+    vectorize_func = np.vectorize(volve_func, signature='(n)->()')
+
+    start = time.time()
+    ret_val = vectorize_func(image_sep)
+    end = time.time()
+    print(f'vectorization: {round((end - start) * 1000)} ms')
+
+    print(type(ret_val))
+    print(ret_val.shape)
+    return ret_val
 
 def test_bitstream():
     test_bitstream = bitstream(16)

@@ -1,8 +1,5 @@
-import math
 import cv2
 import numpy as np
-
-from bitstream import bitstream
 
 class ImageBits:
     def __init__(self, image_path):
@@ -14,6 +11,7 @@ class ImageBits:
         self.depth = self.image.shape[2]
 
         self.max_bit_size = self.height * self.width * self.depth * 2
+        self.max_byte_size = self.height * self.width * self.depth
         
     def get_formatted_max_bit_size(self):
         gb = 1_000_000_000
