@@ -11,21 +11,21 @@ class bitstream:
         self.max_bit_size = bit_array_length
         self.max_byte_size = math.ceil(bit_array_length / 8)
 
-        self.byte_array = np.frombuffer(content, dtype=np.byte)
+        self.byte_array = np.frombuffer(content, dtype=np.uint8)
 
-        print(np.byte(np.int32(len(name))))
+        print(np.uint8(np.int32(len(name))))
 
-        name_string_len = np.frombuffer(np.int32(len(name)), np.byte)
+        name_string_len = np.frombuffer(np.int32(len(name)), np.uint8)
         print(name_string_len)
-        name_string = np.frombuffer(name.encode('utf-8'), np.byte)
-        content_len = np.frombuffer(np.int32(len(self.byte_array)), np.byte)
+        name_string = np.frombuffer(name.encode('utf-8'), np.uint8)
+        content_len = np.frombuffer(np.int32(len(self.byte_array)), np.uint8)
 
         self.byte_array = np.concatenate((
             name_string_len,
             name_string,
             content_len,
             self.byte_array
-        ), dtype=np.byte)
+        ), dtype=np.uint8)
         
         print('byte_array:\n', self.byte_array)
     
@@ -58,10 +58,14 @@ def conv_bitimage_bistream(image_bits: ImageBits) -> np.ndarray:
     
     vectorize_func = np.vectorize(volve_func, signature='(n)->()')
 
+    print('image_sep:\n', image_sep.flatten()[:8])
+
     start = time.time()
     ret_val = vectorize_func(image_sep).astype(np.uint8)
     end = time.time()
     print(f'vectorization: {round((end - start) * 1000)} ms')
+
+    print('ret_val:\n', ret_val.flatten()[:8])
 
     print(type(ret_val))
     print(ret_val.shape)

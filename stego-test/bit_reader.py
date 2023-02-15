@@ -24,6 +24,8 @@ class BitReader:
         
         print(f'container: {round((end - start) * 1000)} ms')
         
+        print('bin data_list:\n', bin(data_list[0][0]))
+        
         start = time.time()
         self.data = np.concatenate(tuple(data_list), dtype=np.uint8)
         end = time.time()
