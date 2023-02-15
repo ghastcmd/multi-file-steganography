@@ -41,3 +41,12 @@ class ImageBits:
 
     def write_image(self, file_name: str):
         cv2.imwrite(file_name, self.image)
+
+def test_image_bits():
+    file = ImageBits('./images/5G5hW9j.jpg')
+    
+    assert file.max_bit_size == 12441600
+    assert file.get_formatted_max_bit_size() == '0 GB 1 MB 555 KB 200 B 0 b'
+
+if __name__ == '__main__':
+    test_image_bits()
