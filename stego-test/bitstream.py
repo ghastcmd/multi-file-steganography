@@ -2,11 +2,12 @@ import numpy as np
 import math
 
 class bitstream:
-    def __init__(self, bit_array_length: int):
+    def __init__(self, bit_array_length: int, content):
         self.max_bit_size = bit_array_length
         self.max_byte_size = math.ceil(bit_array_length / 8)
 
-        self.byte_array = np.zeros((self.max_byte_size), np.byte)
+        self.byte_array = np.array(content)
+        # self.byte_array = np.zeros((self.max_byte_size), np.byte)
     
     def __getitem__(self, index):
         byte_value = self.byte_array[index // 8]
@@ -15,7 +16,7 @@ class bitstream:
         return ret_value
 
     def get_two(self, index):
-        byte_value = self.byte_array[index // 8]
+        byte_value = self.byte_array[(index // 8) % self.max_bit_size]
         rest = index % 8
         ret_value = (byte_value & (0b11 << (7 - rest))) >> (7 - rest - 1)
         return ret_value
