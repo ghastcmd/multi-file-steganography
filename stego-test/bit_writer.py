@@ -2,7 +2,6 @@ import numpy as np
 
 from image_bits import ImageBits
 from bitstream import bitstream
-from bit_file import BitFile
 
 class BitWriter:
     def __init__(self, file_in: str, container_file_paths: list[str]):
@@ -10,7 +9,8 @@ class BitWriter:
         for file in container_file_paths:
             self.containers.append(ImageBits(file))
         
-        self.bitstream = BitFile(file_in).bitstream
+        file_bytes = open(file_in, 'rb').read()
+        self.bitstream = bitstream(len(file_bytes) // 8, file_bytes)
 
         self.written_bits = 0
         self.image_file_count = 0
