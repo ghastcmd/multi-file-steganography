@@ -4,7 +4,7 @@ import numpy as np
 class ImageBits:
     def __init__(self, image_path):
         self.image = cv2.imread(image_path)
-        self.image = np.array(self.image)
+        self.image = np.array(self.image, dtype=np.uint8)
 
         self.height = self.image.shape[0]
         self.width = self.image.shape[1]

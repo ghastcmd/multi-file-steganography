@@ -8,6 +8,8 @@ class BitWriter:
         self.containers = []
         for file in container_file_paths:
             self.containers.append(ImageBits(file))
+            print(f'written {file} file')
+            print(self.containers)
         
         file_bytes = open(file_in, 'rb').read()
         self.bitstream = bitstream(file_in, len(file_bytes) // 8, file_bytes)
@@ -19,13 +21,12 @@ class BitWriter:
         indices = np.arange(start, end, 2).reshape(cur_image.image.shape)
         reduce_func = lambda x: self.bitstream.get_two(x)
         
-        bits_values = reduce_func(indices)
+        bits_values = reduce_func(indices).astype(np.uint8)
         
-        conv_bits_values = bits_values.astype(np.uint8)
-        cur_image.image ^= (-conv_bits_values ^ cur_image.image) & (0b11 & conv_bits_values)
+        cur_image.image ^= (-bits_values ^ cur_image.image) & 0b11
     
         self.written_bits += end - start
-    
+
     def write_all(self):
         for image in self.containers:
             self.write_single_file(image, self.written_bits, image.max_bit_size)

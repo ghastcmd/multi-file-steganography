@@ -13,7 +13,10 @@ class bitstream:
 
         self.byte_array = np.frombuffer(content, dtype=np.byte)
 
+        print(np.byte(np.int32(len(name))))
+
         name_string_len = np.frombuffer(np.int32(len(name)), np.byte)
+        print(name_string_len)
         name_string = np.frombuffer(name.encode('utf-8'), np.byte)
         content_len = np.frombuffer(np.int32(len(self.byte_array)), np.byte)
 
@@ -23,6 +26,8 @@ class bitstream:
             content_len,
             self.byte_array
         ), dtype=np.byte)
+        
+        print('byte_array:\n', self.byte_array)
     
     def __getitem__(self, index):
         byte_value = self.byte_array[index // 8]
@@ -33,7 +38,7 @@ class bitstream:
     def get_two(self, index):
         byte_value = self.byte_array[(index // 8) % self.max_bit_size]
         rest = index % 8
-        ret_value = (byte_value & (0b11 << (7 - rest))) >> (7 - rest - 1)
+        ret_value = (byte_value & (0b11 << (6 - rest))) >> (6 - rest)
         return ret_value
 
     def __setitem__(self, index, value):
@@ -42,7 +47,7 @@ class bitstream:
         self.byte_array[index // 8] ^= (-bool(value) ^ set_value) & (1 << (7 - rest))
 
 
-def conv_bitimage_bistream(image_bits: ImageBits) -> bitstream:
+def conv_bitimage_bistream(image_bits: ImageBits) -> np.ndarray:
     image_sep = image_bits.image.reshape((-1, 4))
     
     lib = ctypes.CDLL('./create_byte_func.so')
@@ -54,7 +59,7 @@ def conv_bitimage_bistream(image_bits: ImageBits) -> bitstream:
     vectorize_func = np.vectorize(volve_func, signature='(n)->()')
 
     start = time.time()
-    ret_val = vectorize_func(image_sep)
+    ret_val = vectorize_func(image_sep).astype(np.uint8)
     end = time.time()
     print(f'vectorization: {round((end - start) * 1000)} ms')
 

@@ -13,6 +13,7 @@ def main():
     start = time.time()
     bit_writer = BitWriter('./conveyer/to_convey.txt', ['./images/5G5hW9j.jpg'])
 
+    bit_writer.write_all()
     bit_writer.write_files()
 
     bit_reader = BitReader(['image0.png'])
