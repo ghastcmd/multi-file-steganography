@@ -41,3 +41,6 @@ class ImageBits:
         b_size = int(max_size)
         
         return f'{gb_size} GB {mb_size} MB {kb_size} KB {byte_size} B {b_size} b'
+
+    def write_image(self, file_name: str):
+        cv2.imwrite(file_name, self.image)
