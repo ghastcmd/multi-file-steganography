@@ -2,12 +2,22 @@ import numpy as np
 import math
 
 class bitstream:
-    def __init__(self, bit_array_length: int, content):
+    def __init__(self, name: str, bit_array_length: int, content: str):
         self.max_bit_size = bit_array_length
         self.max_byte_size = math.ceil(bit_array_length / 8)
 
-        self.byte_array = np.array(content)
-        # self.byte_array = np.zeros((self.max_byte_size), np.byte)
+        self.byte_array = np.frombuffer(content, dtype=np.byte)
+
+        name_string_len = np.frombuffer(np.int32(len(name)), np.byte)
+        name_string = np.frombuffer(name.encode('utf-8'), np.byte)
+        content_len = np.frombuffer(np.int32(len(self.byte_array)), np.byte)
+
+        self.byte_array = np.concatenate((
+            name_string_len,
+            name_string,
+            content_len,
+            self.byte_array
+        ), dtype=np.byte)
     
     def __getitem__(self, index):
         byte_value = self.byte_array[index // 8]

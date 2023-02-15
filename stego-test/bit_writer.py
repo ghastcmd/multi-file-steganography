@@ -10,7 +10,7 @@ class BitWriter:
             self.containers.append(ImageBits(file))
         
         file_bytes = open(file_in, 'rb').read()
-        self.bitstream = bitstream(len(file_bytes) // 8, file_bytes)
+        self.bitstream = bitstream(file_in, len(file_bytes) // 8, file_bytes)
 
         self.written_bits = 0
         self.image_file_count = 0
