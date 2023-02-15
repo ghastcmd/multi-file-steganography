@@ -14,10 +14,7 @@ class ImageBits:
         self.depth = self.image.shape[2]
 
         self.max_bit_size = self.height * self.width * self.depth * 2
-        self.used_bits = 0
         
-        self.bit_array = bitstream(self.max_bit_size)
-
     def get_formatted_max_bit_size(self):
         gb = 1_000_000_000
         mb = 1_000_000

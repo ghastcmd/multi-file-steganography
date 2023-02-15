@@ -15,7 +15,7 @@ class bitstream:
         return ret_value
 
     def get_two(self, index):
-        byte_value = self.byte_array[index // 8]
+        byte_value = self.byte_array[(index // 8) % self.max_bit_size]
         rest = index % 8
         ret_value = (byte_value & (0b11 << (7 - rest))) >> (7 - rest - 1)
         return ret_value
