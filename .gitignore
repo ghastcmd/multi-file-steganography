@@ -6,3 +6,5 @@ __pycache__
 *.lib
 *.exp
 *.so
+
+stego-test/retrieval/*

@@ -18,7 +18,7 @@ def main():
 
     bit_reader = BitReader(['image0.png'])
     
-    bit_reader.retrieve('out.file')
+    bit_reader.retrieve('retrieval')
     end = time.time()
     
     print(f'total: {round((end - start) * 1000)} ms')

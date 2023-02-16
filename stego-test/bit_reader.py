@@ -1,5 +1,5 @@
 import time
-import struct
+import os
 
 import numpy as np
 
@@ -34,14 +34,34 @@ class BitReader:
         
     def parse_data(self):
         print('data:\n', self.data)
-        string_length = int.from_bytes(self.data[:4], byteorder='little', signed=True)
-        print(self.data[:4])
-        print(string_length)
+        self.name_string_lenth = int.from_bytes(self.data[:4], byteorder='little', signed=False)
+        self.current_byte += 4
         
-    def retrieve(self, out_file: str):
+        self.name_string = self.data[
+                self.current_byte:self.name_string_lenth + self.current_byte
+            ].tostring().decode('utf-8')
+        self.current_byte += self.name_string_lenth
+        
+        self.data_length = int.from_bytes(
+            self.data[self.current_byte:self.current_byte+4],
+            byteorder='little',
+            signed=False
+        )
+        self.current_byte += 4
+        
+        self.file_data = np.array(self.data[self.current_byte:self.current_byte + self.data_length])
+        
+        print('data_length: ', self.data_length, 'file_data >:', len(self.file_data))
+        
+        print(self.name_string)
+        
+        
+    def retrieve(self, out_folder: str):
         self.get_data()
         self.parse_data()
-        self.out = out_file
+        print(self.file_data.tostring())
+        with open(os.path.join(out_folder, self.name_string), 'wb') as file:
+            file.write(self.file_data.tostring()) 
 
 def test_bit_reader():
     return

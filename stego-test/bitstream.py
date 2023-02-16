@@ -1,22 +1,19 @@
 import math
 import time
 import ctypes
+import os
 
 import numpy as np
 
 from image_bits import ImageBits
 
 class bitstream:
-    def __init__(self, name: str, bit_array_length: int, content):
-        self.max_bit_size = bit_array_length
-        self.max_byte_size = math.ceil(bit_array_length / 8)
+    def __init__(self, name: str, content):
+        name = os.path.basename(name)
 
         self.byte_array = np.frombuffer(content, dtype=np.uint8)
 
-        print(np.uint8(np.int32(len(name))))
-
         name_string_len = np.frombuffer(np.int32(len(name)), np.uint8)
-        print(name_string_len)
         name_string = np.frombuffer(name.encode('utf-8'), np.uint8)
         content_len = np.frombuffer(np.int32(len(self.byte_array)), np.uint8)
 
@@ -27,6 +24,12 @@ class bitstream:
             self.byte_array
         ), dtype=np.uint8)
         
+        self.max_byte_size = len(self.byte_array)
+        self.max_bit_size = self.max_byte_size * 8
+        
+        print('simple sum: ', len(name_string_len) + len(name_string) + len(content_len) + len(self.byte_array))
+        print('len byte_array: ', len(self.byte_array), 'max_bit_size: ', self.max_byte_size, self.max_byte_size // 8)
+        
         print('byte_array:\n', self.byte_array)
     
     def __getitem__(self, index):
@@ -36,7 +39,7 @@ class bitstream:
         return ret_value
 
     def get_two(self, index):
-        byte_value = self.byte_array[(index // 8) % self.max_bit_size]
+        byte_value = self.byte_array[(index // 8) % self.max_byte_size]
         rest = index % 8
         ret_value = (byte_value & (0b11 << (6 - rest))) >> (6 - rest)
         return ret_value
