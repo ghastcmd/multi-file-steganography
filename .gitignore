@@ -2,3 +2,9 @@ stego-test/test
 stego-test/images
 *.png
 __pycache__
+
+*.lib
+*.exp
+*.so
+
+stego-test/retrieval/*

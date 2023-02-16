@@ -1,14 +1,32 @@
-import numpy as np
 import math
+import time
+import ctypes
+import os
+
+import numpy as np
+
+from image_bits import ImageBits
 
 class bitstream:
-    def __init__(self, bit_array_length: int, content):
-        self.max_bit_size = bit_array_length
-        self.max_byte_size = math.ceil(bit_array_length / 8)
+    def __init__(self, name: str, content):
+        name = os.path.basename(name)
 
-        self.byte_array = np.array(content)
-        # self.byte_array = np.zeros((self.max_byte_size), np.byte)
-    
+        self.byte_array = np.frombuffer(content, dtype=np.uint8)
+
+        name_string_len = np.frombuffer(np.int32(len(name)), np.uint8)
+        name_string = np.frombuffer(name.encode('utf-8'), np.uint8)
+        content_len = np.frombuffer(np.int32(len(self.byte_array)), np.uint8)
+
+        self.byte_array = np.concatenate((
+            name_string_len,
+            name_string,
+            content_len,
+            self.byte_array
+        ), dtype=np.uint8)
+        
+        self.max_byte_size = len(self.byte_array)
+        self.max_bit_size = self.max_byte_size * 8
+
     def __getitem__(self, index):
         byte_value = self.byte_array[index // 8]
         rest = index % 8
@@ -16,15 +34,30 @@ class bitstream:
         return ret_value
 
     def get_two(self, index):
-        byte_value = self.byte_array[(index // 8) % self.max_bit_size]
+        byte_value = self.byte_array[(index // 8) % self.max_byte_size]
         rest = index % 8
-        ret_value = (byte_value & (0b11 << (7 - rest))) >> (7 - rest - 1)
+        ret_value = (byte_value & (0b11 << (6 - rest))) >> (6 - rest)
         return ret_value
 
     def __setitem__(self, index, value):
         set_value = self.byte_array[index // 8]
         rest = index % 8
         self.byte_array[index // 8] ^= (-bool(value) ^ set_value) & (1 << (7 - rest))
+
+
+def conv_bitimage_bistream(image_bits: ImageBits) -> np.ndarray:
+    image_sep = image_bits.image.reshape((-1, 4))
+    
+    lib = ctypes.CDLL('./create_byte_func.so')
+    lib.get_byte.argtypes = [ctypes.POINTER(ctypes.c_uint8)]
+    lib.get_byte.restype = ctypes.c_byte
+    
+    volve_func = lambda x: lib.get_byte(x.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)))
+    
+    vectorize_func = np.vectorize(volve_func, signature='(n)->()')
+
+    ret_val = vectorize_func(image_sep).astype(np.uint8)
+    return ret_val
 
 def test_bitstream():
     test_bitstream = bitstream(16)
