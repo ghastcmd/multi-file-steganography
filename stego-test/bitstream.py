@@ -44,21 +44,6 @@ class bitstream:
         rest = index % 8
         self.byte_array[index // 8] ^= (-bool(value) ^ set_value) & (1 << (7 - rest))
 
-
-def conv_bitimage_bistream(image_bits: ImageBits) -> np.ndarray:
-    image_sep = image_bits.image.reshape((-1, 4))
-    
-    lib = ctypes.CDLL('./create_byte_func.so')
-    lib.get_byte.argtypes = [ctypes.POINTER(ctypes.c_uint8)]
-    lib.get_byte.restype = ctypes.c_byte
-    
-    volve_func = lambda x: lib.get_byte(x.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)))
-    
-    vectorize_func = np.vectorize(volve_func, signature='(n)->()')
-
-    ret_val = vectorize_func(image_sep).astype(np.uint8)
-    return ret_val
-
 def test_bitstream():
     test_bitstream = bitstream(16)
     assert len(test_bitstream.byte_array) == 2
