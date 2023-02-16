@@ -23,5 +23,18 @@ def main():
     
     print(f'total: {round((end - start) * 1000)} ms')
 
+def test_output():
+    retrieval_file = ''
+    with open('./retrieval/to_convey.txt') as file:
+        retrieval_file = file.read()
+    
+    source_file = ''
+    with open('./conveyer/to_convey.txt') as file:
+        source_file = file.read()
+    
+    if retrieval_file != source_file:
+        print('ERROR CMP')        
+
 if __name__ == '__main__':
     main()
+    test_output()
