@@ -26,12 +26,7 @@ class bitstream:
         
         self.max_byte_size = len(self.byte_array)
         self.max_bit_size = self.max_byte_size * 8
-        
-        print('simple sum: ', len(name_string_len) + len(name_string) + len(content_len) + len(self.byte_array))
-        print('len byte_array: ', len(self.byte_array), 'max_bit_size: ', self.max_byte_size, self.max_byte_size // 8)
-        
-        print('byte_array:\n', self.byte_array)
-    
+
     def __getitem__(self, index):
         byte_value = self.byte_array[index // 8]
         rest = index % 8
@@ -61,17 +56,7 @@ def conv_bitimage_bistream(image_bits: ImageBits) -> np.ndarray:
     
     vectorize_func = np.vectorize(volve_func, signature='(n)->()')
 
-    print('image_sep:\n', image_sep.flatten()[:8])
-
-    start = time.time()
     ret_val = vectorize_func(image_sep).astype(np.uint8)
-    end = time.time()
-    print(f'vectorization: {round((end - start) * 1000)} ms')
-
-    print('ret_val:\n', ret_val.flatten()[:8])
-
-    print(type(ret_val))
-    print(ret_val.shape)
     return ret_val
 
 def test_bitstream():

@@ -17,23 +17,12 @@ class BitReader:
     
     def get_data(self):
         data_list = []
-        start = time.time()
         for container in self.containers:
             data_list.append(conv_bitimage_bistream(container))
-        end = time.time()
         
-        print(f'container: {round((end - start) * 1000)} ms')
-        
-        print('bin data_list:\n', bin(data_list[0][0]))
-        
-        start = time.time()
         self.data = np.concatenate(tuple(data_list), dtype=np.uint8)
-        end = time.time()
-        
-        print(f'concat: {round((end - start) * 1000)} ms')
         
     def parse_data(self):
-        print('data:\n', self.data)
         self.name_string_lenth = int.from_bytes(self.data[:4], byteorder='little', signed=False)
         self.current_byte += 4
         
@@ -51,15 +40,9 @@ class BitReader:
         
         self.file_data = np.array(self.data[self.current_byte:self.current_byte + self.data_length])
         
-        print('data_length: ', self.data_length, 'file_data >:', len(self.file_data))
-        
-        print(self.name_string)
-        
-        
     def retrieve(self, out_folder: str):
         self.get_data()
         self.parse_data()
-        print(self.file_data.tostring())
         with open(os.path.join(out_folder, self.name_string), 'wb') as file:
             file.write(self.file_data.tostring()) 
 

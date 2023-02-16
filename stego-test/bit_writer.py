@@ -8,8 +8,6 @@ class BitWriter:
         self.containers = []
         for file in container_file_paths:
             self.containers.append(ImageBits(file))
-            print(f'written {file} file')
-            print(self.containers)
         
         file_bytes = open(file_in_name, 'rb').read()
         self.bitstream = bitstream(file_in_name, file_bytes)
@@ -23,16 +21,7 @@ class BitWriter:
         
         bits_values = reduce_func(indices).astype(np.uint8)
     
-        max_count = (((indices // 8) % self.bitstream.max_byte_size) == 0).sum()
-    
-        print('max_count: ', max_count)
-    
-        print('start bits_values:\n', bits_values.flatten()[:8])
-        print('start cur_image.image:\n', cur_image.image.flatten()[:8])
-        
         cur_image.image = cur_image.image & ~0b11 | bits_values
-    
-        print('cur_image.flatten():\n', cur_image.image.flatten()[:8])
     
         self.written_bits += end - start
 
