@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 
 from image_bits import ImageBits
@@ -16,14 +18,18 @@ class BitWriter:
         self.image_file_count = 0
     
     def write_single_file(self, cur_image: ImageBits, start: int, end: int):
-        indices = np.arange(start, end, 2, dtype=np.uint64).reshape(cur_image.image.shape)
-        reduce_func = lambda x: self.bitstream.get_two(x)
-        
-        bits_values = reduce_func(indices).astype(np.uint8)
+        print('write_single_file: ', end='')
+        tic = time.time()
+        bits_values = self.bitstream.get_two(
+                np.arange(start, end, 2, dtype=np.uint64)
+            ).astype(np.uint8).reshape(cur_image.image.shape)
     
-        cur_image.image = cur_image.image & ~0b11 | bits_values
+        cur_image.image[:,:,:] &= np.uint8(~0b11)
+        cur_image.image[:,:,:] |= bits_values
     
         self.written_bits += end - start
+        toc = time.time()
+        print(f'{round((toc - tic) * 1000)} ms')
 
     def write_all(self):
         for image in self.containers:

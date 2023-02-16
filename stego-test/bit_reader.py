@@ -19,7 +19,7 @@ class BitReader:
     
         shift_ind = np.array([6, 4, 2, 0], dtype=np.uint8)
 
-        print('timing bits retrieval')
+        print('retrieve_bistream: ', end='')
 
         start = time.time()
         ret_val = np.bitwise_and(image_sep, 0b11).astype(np.uint8)
